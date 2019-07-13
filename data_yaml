@@ -1,0 +1,8 @@
+---
+querytype: realtime
+symbols:
+- apple
+- cisco
+- mac
+- amazon
+- nike

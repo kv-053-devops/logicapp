@@ -1,0 +1,6 @@
+{
+"querytype": "intraday",
+ "symbols": "AAPL" ,
+ "period" : 5,
+  "interval" : 30
+}
