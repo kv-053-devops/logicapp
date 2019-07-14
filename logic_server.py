@@ -1,75 +1,87 @@
-from flask import Flask
-from flask import render_template
-from flask import request
+from flask import Flask, request, jsonify, render_template
 import requests
 import json
 import yaml
+import sys
+#import argparse
 
 app = Flask(__name__)
 
+app_run_address = sys.argv[1]
+app_run_port = sys.argv[2]
+
+app_query_url = "http://127.0.0.1:5003/query/yml_data"
+
 list_of_datas = []
+realtime_response_filter = ['symbol', 'price', 'price_open','day_high', 'day_low',  'market_cap', 'volume']
 
-api_url = "https://api.worldtradingdata.com/api/v1/stock?symbol=AAPL,MSFT,GM,AMSE&api_token=KFzAzKDWU88IAG2uQHp3i3kBa9RCkd3JAWJulicwGNHssxEwq0wElClEUACM"
-
-def get_data_from_remote_api(api_url):
-    res = requests.get(api_url)
-    # decoded_response = res.decode("UTF-8")
-    data = res.json()
-    yml_data = yaml.dump(data)
-   # print(yml_data)
-    return yml_data
-    #print(res.status_code)
+## construct the argument parse and parse the arguments
+#ap = argparse.ArgumentParser(usage='%(prog)s -i xxx-openstack-vps-id-1-yyy,xxx-openstack-vps-id-2-yyy\nor use without arguments:\n%(prog)s ',
+#                                description='This script counts bandwidth usage for VPS in OpenStack cloud. VPS will be suspended if it exhausted month limit. Read comments inside script for more information.',
+#                                epilog="Check file 'vps-statistics' in the directory with this script for stored results. Script needs credentials to OpenStack API, be shure that file with name 'clouds.yaml' is exist in folder with script.")
+#ap.add_argument("-i", "--ignore", type=str, required=False, help="List of vps IDs which will NOT be suspended regardless of bandwidth limit. Use ',' to separate IDs")
+#ap.add_argument("-I", "--ignore-projects", type=str, required=False, help="List of OpenStack projects. VPS inside projects will not be suspended regardless of bandwidth limit. Use ',' to separate IDs")
+#ap.add_argument("-l", "--limit", type=int, default=10240, help="Set monthly bandwidth limit for VPS in GBytes. Default is %(default)s GB" )
+#args = vars(ap.parse_args())
 
 
-@app.route("/")
-def hello():
-    return "Hello world!"
+def logic_realtime(dict_data):
+    """ Take data-results from Query API and parse needed values for 'realtime' query type.
+    Function accepts only dictionary obejcts. """
+    filtered_data = { "data" : [] , "querytype": "realtime" }
+    for item in dict_data.get("data"):
+         item_dict = {}
+         for filtes in realtime_response_filter:
+             item_dict[filtes] = item[filtes]
+         filtered_data["data"].append(item_dict)
+    return filtered_data
 
-@app.route('/logic/query_data', methods=['POST'])
-def post_json_data():
-    income_data = request.get_data()
-    print("TYPE of data: " + str(type(income_data)))
-    print(request.is_json)
-    print(income_data)
-    json_string = json.loads(income_data)
-    print(str(type(json_string)))
-    yaml_string = yaml.dump(json_string)
-    #print(json_string)
-    #list_of_datas.append(json_string)
-    #string_of_datas = ';'.join(str(i) for i in list_of_datas)
-#    print(yaml_string)
-#    return render_template( 'genlist.html', name='api', list=string_of_datas)
-    #post_req = requests.post('http://127.0.0.1:5005/query/yml_data', data=yaml_string) 
-    query_resp = get_data_from_remote_api(api_url) 
-    #print(test)
-    query_resp_yaml = yaml.safe_load(query_resp)
-    query_resp_json = json.dumps(query_resp_yaml)
-    return query_resp_json
-    #return query_resp_json
-
-def json_to_dict(thin):
-    pass
-
-def yaml_to_dict(thin):
-    pass
-
-def dict_to_yaml(thin):
-    pass
-
-def dict_to_json(thin):
-    pass
-
-def logic_realtime(dict1):
-    pass
 
 def logic_intraday(dict1):
+    # need to be finished
     pass
 
 def query_realtime(dict_from_json):
-    pass
+    """ Send request to "query" API and convert reply to dictionary.
+    Function accepts only dictionary obejcts. """
+    income_data_yaml = yaml.dump(dict_from_json)
+    try: 
+        request_to_query = requests.post(app_query_url, data=income_data_yaml)
+    except : 
+        print(request_to_query)
+        return 'error'
+    dict_from_query = yaml.safe_load(request_to_query.text)
+    return dict_from_query
+
+@app.route("/")
+def hello():
+    return "The root uri '/' doesn't configured. Use '/logic/query_data' instead."
+
+@app.route('/logic/query_data', methods=['POST'])
+def post_json_data():
+    """ Main endpoint of logic server API """
+    income_data = request.get_data()
+    income_data_dict = json.loads(income_data.decode('utf-8'))
+    if income_data_dict["query_type"] == "realtime":
+	# process 'realtime' request to query API
+        query_req =  query_realtime(income_data_dict)
+        if query_req == 'error':
+            err_mesage = "ERROR: Problems in connection to Query API: '" + app_query_url + "'."
+            print(err_mesage)
+            return(err_mesage)
+    elif income_data_dict["query_type"] == "intraday":
+	# process 'intraday' request to query API
+        query_req =  query_intraday(income_data_dict)
+        # need to be finished
+        pass
+    else:
+        print("Unknown query type: " + income_data_dict["query_type"])
+        return "Unknown query type"
+    result_dict = logic_realtime(query_req)
+    result_json = json.dumps(result_dict)
+    return result_json
 
 
-
-if __name__ == "__name__":
-    app.run()
+if __name__ == "__main__":
+    app.run(host=app_run_address, port=app_run_port)
 

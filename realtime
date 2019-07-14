@@ -1,10 +1,10 @@
 {
   "symbols": [
-    "APPL",
+    "AAPL",
     "MSFT",
     "FB",
     "AMZN",
     "CSCO"
   ],
-   "querytype": "realtime"
+   "query_type": "realtime"
 }
