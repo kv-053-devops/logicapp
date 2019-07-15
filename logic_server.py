@@ -7,10 +7,12 @@ import sys
 
 app = Flask(__name__)
 
+req_timeout = 60
 app_run_address = sys.argv[1]
 app_run_port = sys.argv[2]
+app_query_url = sys.argv[3]
 
-app_query_url = "http://127.0.0.1:5003/query/yml_data"
+#app_query_url = "http://127.0.0.1:5003/query/yml_data"
 
 list_of_datas = []
 realtime_response_filter = ['symbol', 'price', 'price_open','day_high', 'day_low',  'market_cap', 'volume']
@@ -42,15 +44,24 @@ def logic_intraday(dict1):
     pass
 
 def query_realtime(dict_from_json):
-    """ Send request to "query" API and convert reply to dictionary.
+    """ Send request with type "realtime" to "query" API and convert reply to dictionary.
     Function accepts only dictionary obejcts. """
     income_data_yaml = yaml.dump(dict_from_json)
     try: 
-        request_to_query = requests.post(app_query_url, data=income_data_yaml)
-    except : 
+        request_to_query = requests.post(app_query_url, data=income_data_yaml, timeout=req_timeout)
+    except:
         print(request_to_query)
         return 'error'
     dict_from_query = yaml.safe_load(request_to_query.text)
+    return dict_from_query
+
+
+def query_intraday(dict_from_json):
+    """ Send request with type "intraday" to "query" API and convert reply to dictionary.
+    Function accepts only dictionary obejcts. """
+    data_yaml = yaml.dump(dict_from_json)
+    res = requests.post(app_query_url, data=data_yaml, timeout=req_timeout)
+    dict_from_query = yaml.safe_load(res.text)
     return dict_from_query
 
 @app.route("/")
@@ -69,15 +80,14 @@ def post_json_data():
             err_mesage = "ERROR: Problems in connection to Query API: '" + app_query_url + "'."
             print(err_mesage)
             return(err_mesage)
+        result_dict = logic_realtime(query_req)
     elif income_data_dict["query_type"] == "intraday":
 	# process 'intraday' request to query API
-        query_req =  query_intraday(income_data_dict)
-        # need to be finished
-        pass
+        result_dict =  query_intraday(income_data_dict)
     else:
         print("Unknown query type: " + income_data_dict["query_type"])
         return "Unknown query type"
-    result_dict = logic_realtime(query_req)
+
     result_json = json.dumps(result_dict)
     return result_json
 

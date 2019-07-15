@@ -1,6 +1,6 @@
 {
-"querytype": "intraday",
+"query_type": "intraday",
  "symbols": "AAPL" ,
- "period" : 5,
-  "interval" : 30
+ "day_range" : "5",
+  "time_interval" : "5"
 }
