@@ -14,7 +14,7 @@ list_of_dict = [{
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return 'Hello World! from Query emulation server use /query/list to check data'
 
 # TEST to obtain YAML request from Logic server step 3
 # Send YAML reqest with intraday data to logic server  using data from https://intraday.worldtradingdata.com/api/v1/intraday?symbol=AAPL&range=1&interval=1&api_token=demo

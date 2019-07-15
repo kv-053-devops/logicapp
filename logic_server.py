@@ -14,7 +14,7 @@ list_of_dict2 = [{
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return 'Hello World from Logic Server! use /logic/list to check data'
 
 # step 2 - to receive JSON query from Front-End
 # step 3 send Yaml query from Logic to Query Server
@@ -26,6 +26,7 @@ def add():
         data_yaml = yaml.dump(data) 		#JSON to YAML
         list_of_dict.append(data_yaml)
         res = requests.post('http://localhost:5003/query/yml_data',data=data_yaml,timeout=1.5)
+        print(res)
     return res.status_code
 
 # to check step 2 result
