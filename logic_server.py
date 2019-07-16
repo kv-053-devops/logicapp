@@ -8,11 +8,15 @@ import sys
 app = Flask(__name__)
 
 req_timeout = 60
-app_run_address = sys.argv[1]
-app_run_port = sys.argv[2]
-app_query_url = sys.argv[3]
-
-#app_query_url = "http://127.0.0.1:5003/query/yml_data"
+print(len(sys.argv))
+if len(sys.argv) != 1 :
+    app_run_address = sys.argv[1]
+    app_run_port = sys.argv[2]
+    app_query_url = sys.argv[3]
+else:
+    app_run_address = '127.0.0.1'
+    app_run_port = '5002'
+    app_query_url = 'http://127.0.0.1:5003/query/yml_data'
 
 list_of_datas = []
 realtime_response_filter = ['symbol', 'price', 'price_open','day_high', 'day_low',  'market_cap', 'volume']
