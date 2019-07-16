@@ -19,7 +19,7 @@ else:
     app_query_url = 'http://127.0.0.1:5003/query/yml_data'
 
 list_of_datas = []
-realtime_response_filter = ['symbol', 'price', 'price_open','day_high', 'day_low',  'market_cap', 'volume']
+realtime_response_filter = ['symbol', 'price', 'price_open','day_high', 'day_low',  'market_cap', 'volume', 'name']
 
 ## construct the argument parse and parse the arguments
 #ap = argparse.ArgumentParser(usage='%(prog)s -i xxx-openstack-vps-id-1-yyy,xxx-openstack-vps-id-2-yyy\nor use without arguments:\n%(prog)s ',
