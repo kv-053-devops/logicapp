@@ -1,0 +1,18 @@
+[Unit]
+Description=
+After=network.target syslog.target
+
+[Service]
+Environment=NODE_ENV=production
+User=
+WorkingDirectory=
+ExecStart=
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=
+
+[Install]
+WantedBy=multi-user.target
+
