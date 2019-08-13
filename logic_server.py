@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template
+from flask_api import status
 import requests
 import json
 import yaml
@@ -8,7 +9,6 @@ import sys
 app = Flask(__name__)
 
 req_timeout = 60
-print(len(sys.argv))
 if len(sys.argv) != 1 :
     app_run_address = sys.argv[1]
     app_run_port = sys.argv[2]
@@ -20,16 +20,6 @@ else:
 
 list_of_datas = []
 realtime_response_filter = ['symbol', 'price', 'price_open','day_high', 'day_low',  'market_cap', 'volume', 'name']
-
-## construct the argument parse and parse the arguments
-#ap = argparse.ArgumentParser(usage='%(prog)s -i xxx-openstack-vps-id-1-yyy,xxx-openstack-vps-id-2-yyy\nor use without arguments:\n%(prog)s ',
-#                                description='This script counts bandwidth usage for VPS in OpenStack cloud. VPS will be suspended if it exhausted month limit. Read comments inside script for more information.',
-#                                epilog="Check file 'vps-statistics' in the directory with this script for stored results. Script needs credentials to OpenStack API, be shure that file with name 'clouds.yaml' is exist in folder with script.")
-#ap.add_argument("-i", "--ignore", type=str, required=False, help="List of vps IDs which will NOT be suspended regardless of bandwidth limit. Use ',' to separate IDs")
-#ap.add_argument("-I", "--ignore-projects", type=str, required=False, help="List of OpenStack projects. VPS inside projects will not be suspended regardless of bandwidth limit. Use ',' to separate IDs")
-#ap.add_argument("-l", "--limit", type=int, default=10240, help="Set monthly bandwidth limit for VPS in GBytes. Default is %(default)s GB" )
-#args = vars(ap.parse_args())
-
 
 def logic_realtime(dict_data):
     """ Take data-results from Query API and parse needed values for 'realtime' query type.
@@ -76,7 +66,10 @@ def hello():
 def post_json_data():
     """ Main endpoint of logic server API """
     income_data = request.get_data()
-    income_data_dict = json.loads(income_data.decode('utf-8'))
+    try:
+        income_data_dict = json.loads(income_data.decode('utf-8'))
+    except json.decoder.JSONDecodeError:
+        return "error", status.HTTP_400_BAD_REQUEST
     if income_data_dict["query_type"] == "realtime":
 	# process 'realtime' request to query API
         query_req =  query_realtime(income_data_dict)
