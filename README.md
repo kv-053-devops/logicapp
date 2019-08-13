@@ -1,4 +1,5 @@
-# logic-srv
-The service for devops team traiding app
-
-the new project
+# Description
+The "Logic"` microservice for Devops kv-053
+## Requirements 
+* Python3.6
+* Flask server is used
