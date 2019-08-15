@@ -14,7 +14,7 @@ if len(sys.argv) != 1 :
     app_run_port = sys.argv[2]
     app_query_url = sys.argv[3]
 else:
-    app_run_address = '127.0.0.1'
+    app_run_address = '0.0.0.0'
     app_run_port = '5002'
     app_query_url = 'http://127.0.0.1:5003/query/yml_data'
 
