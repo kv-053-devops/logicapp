@@ -7,16 +7,14 @@ pipeline {
     FE_SVC_NAME = "${APP_NAME}-frontend"
     CLUSTER = "demo2-gke-cluster"
     CLUSTER_ZONE = "europe-west3-a"
-    IMAGE_TAG = "eu.gcr.io/${PROJECT}/${APP_NAME}:${env.BUILD_NUMBER}"
+    IMAGE_TAG = "eu.gcr.io/${PROJECT}/${APP_NAME}:${BUILD_NUMBER}"
     JENKINS_CRED = "${PROJECT}"
-    BUILD_HOME='/var/lib/jenkins/workspace'
     APP_REPO="https://github.com/kv-053-devops/logicapp.git"
+    NAMESPACE="dev"
   }
 
  agent {
     kubernetes {
-    //   label 'hello-app'
-    //   defaultContainer 'jnlp'
       yaml """
 apiVersion: v1
 kind: Pod
@@ -66,7 +64,7 @@ spec:
     stage('Code test') {
         steps {
         container('python'){
-            sh "pip3 install -r /home/app/requirements.txt";
+            sh "pip3 install -r requirements.txt";
             sh "python3 unit_test.py";
           }
         }
@@ -93,7 +91,8 @@ spec:
         stage('Deploy') {
       steps {
         container('kubectl') {
-         sh "kubectl create deployment ${APP_NAME} --image=${IMAGE_TAG}";
+         sh "kubectl get deployments --namespace=${NAMESPACE} | grep ${APP_NAME} &&  kubectl patch deployment ${APP_NAME} --namespace=${NAMESPACE} || kubectl create deployment ${APP_NAME} --image=${IMAGE_TAG} --namespace=${NAMESPACE}"
+         sh "";
          //sh "kubectl get pods";
          //sh "kubectl expose deployment hello-web --type=LoadBalancer --port 81 --target-port 8081";
         }
