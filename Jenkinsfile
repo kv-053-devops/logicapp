@@ -28,6 +28,10 @@ spec:
   - name: dockersock
     hostPath:
       path: /var/run/docker.sock
+  - name: jenkins-gcr-sa-creds
+    secret:
+      secretName: jenkins-gcr-json
+
   containers:
   - name: git
     image: gcr.io/cloud-builders/git
@@ -47,6 +51,9 @@ spec:
     volumeMounts:
     - name: dockersock
       mountPath: /var/run/docker.sock
+    - name: jenkins-gcr-sa-creds
+      mountPath: /tmp/gcr/
+      readOnly: true
   - name: kubectl
     image: gcr.io/cloud-builders/kubectl
     command:
@@ -82,11 +89,13 @@ spec:
         stage('Push container') {
       steps {
         container('docker') {
-			script {
-            docker.withRegistry("https://eu.gcr.io", "gcr:${STORAGE_CREDS}") {
-            sh "docker push ${IMAGE_TAG}"
-			}
-        }
+          sh "cat /tmp/gcr/jenkins-gcr.json | docker login -u _json_key --password-stdin https://eu.gcr.io";
+          sh "docker push ${IMAGE_TAG}";
+			// script {
+      //       docker.withRegistry("https://eu.gcr.io", "gcr:${STORAGE_CREDS}") {
+      //       sh "docker push ${IMAGE_TAG}"
+			//      }
+      //   }
     }}}
         stage('Deploy') {
       steps {
