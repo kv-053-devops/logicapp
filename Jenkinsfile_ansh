@@ -94,7 +94,7 @@ spec:
     }}}
         stage('Deploy') {
       steps {
-        container('kubectl') `{
+        container('kubectl') {
          sh "cat>deployment<<END_FILE
 apiVersion: apps/v1
 kind: Deployment
