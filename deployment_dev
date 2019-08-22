@@ -20,7 +20,7 @@ spec:
         image: eu.gcr.io/PROJECTID/logicapp:CONTAINERTAG
         ports:
         - containerPort: 5002
-        args: ['0.0.0.0', '5002','http://queryapp:5003/query/yml_data']
+        args: ['0.0.0.0', '5002','http://queryapp.dev.svc:5003/query/yml_data']
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -28,12 +28,12 @@ kind: Service
 metadata:
   name: logicapp
   labels:
-    run: logicapp
+    app: logicapp
   namespace: dev
 spec:
   ports:
   - port: 5002
     protocol: TCP
   selector:
-    run: logicapp
+    app: logicapp
 ---
