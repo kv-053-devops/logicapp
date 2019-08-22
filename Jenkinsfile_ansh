@@ -95,7 +95,8 @@ spec:
         stage('Deploy') {
       steps {
         container('kubectl') {
-         sh """sed  "s/CONTAINERTAG/${GIT_COMMIT}/g" deployment_dev """
+         sh """sed -i "s/CONTAINERTAG/${GIT_COMMIT}/g" deployment_dev """
+         sh """sed -i "s/PROJECTID/${PROJECT}/g" deployment_dev """
          sh "kubectl apply -f deployment_dev"
          sh "";
          //sh "kubectl get pods";
