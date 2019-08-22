@@ -16,7 +16,7 @@ spec:
       hostname: logicapp
       containers:
       - name: logicapp
-        image: eu.gcr.io/gcpssproject-248009/logicapp:2
+        image: eu.gcr.io/gcpssproject-248009/logicapp:3
         ports:
         - containerPort: 5002
         args: ['0.0.0.0', '5002','http://queryapp:5003/query/yml_data']
