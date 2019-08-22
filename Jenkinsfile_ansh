@@ -95,31 +95,6 @@ spec:
         stage('Deploy') {
       steps {
         container('kubectl') {
-         sh "cat>deployment<<END_FILE
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ${APP_NAME}
-  namespace: ${NAMESPACE}
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ${APP_NAME}
-  template:
-    metadata:
-      labels:
-        app: ${APP_NAME}
-    spec:
-      hostname: ${APP_NAME}
-      containers:
-      - name: ${APP_NAME}
-        image: eu.gcr.io/${PROJECT}/${APP_NAME}:${BUILD_NUMBER}
-        ports:
-        - containerPort: 5002
-        args: ['0.0.0.0', '5002','http://queryapp:5003/query/yml_data']
-        restartPolicy: OnFailure
-END_FILE"
          sh "kubectl get deployments --namespace=${NAMESPACE} | grep ${APP_NAME} &&  kubectl patch deployment ${APP_NAME} --namespace=${NAMESPACE} || kubectl apply -f deployment"
          sh "";
          //sh "kubectl get pods";
