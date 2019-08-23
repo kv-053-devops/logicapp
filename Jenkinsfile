@@ -4,7 +4,7 @@ pipeline {
     PROJECT = "demo2-248908"
     APP_NAME = "logicapp"
     STORAGE_CREDS = "${PROJECT}"
-    IMAGE_TAG = "eu.gcr.io/${PROJECT}/${APP_NAME}:${BUILD_NUMBER}"
+    IMAGE_TAG = "eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT}"
     JENKINS_CRED = "${PROJECT}"
     APP_REPO="https://github.com/kv-053-devops/logicapp.git"
     NAMESPACE="dev"
