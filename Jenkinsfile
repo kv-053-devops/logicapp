@@ -100,7 +100,9 @@ spec:
         stage('Deploy') {
       steps {
         container('kubectl') {
-         sh "kubectl get deployments --namespace=${NAMESPACE} | grep ${APP_NAME} &&  kubectl patch deployment ${APP_NAME} --namespace=${NAMESPACE} || kubectl create deployment ${APP_NAME} --image=${IMAGE_TAG} --namespace=${NAMESPACE}"
+         sh """sed -i "s/CONTAINERTAG/${GIT_COMMIT}/g" deployment_dev """
+         sh """sed -i "s/PROJECTID/${PROJECT}/g" deployment_dev """
+         sh "kubectl apply -f deployment_dev"
          sh "";
          //sh "kubectl get pods";
          //sh "kubectl expose deployment hello-web --type=LoadBalancer --port 81 --target-port 8081";
