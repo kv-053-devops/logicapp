@@ -103,7 +103,6 @@ spec:
          sh """sed -i "s/CONTAINERTAG/${GIT_COMMIT}/g" deployment_dev """
          sh """sed -i "s/PROJECTID/${PROJECT}/g" deployment_dev """
          sh "kubectl apply -f deployment_dev"
-         sh "";
          //sh "kubectl get pods";
          //sh "kubectl expose deployment hello-web --type=LoadBalancer --port 81 --target-port 8081";
         }
