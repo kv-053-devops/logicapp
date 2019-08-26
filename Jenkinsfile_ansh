@@ -89,6 +89,7 @@ spec:
         stage('Push container') {
       steps {
         container('docker') {
+          sh "env"
           sh "cat /tmp/gcr/jenkins-gcr.json | docker login -u _json_key --password-stdin https://eu.gcr.io";
           sh "docker push ${IMAGE_TAG}";
     }}}
