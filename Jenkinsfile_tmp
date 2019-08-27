@@ -2,10 +2,9 @@ pipeline {
 
   environment {
     APP_NAME = "logicapp"
-    IMAGE_TAG = "eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT}"
   }
 
- agent {
+agent {
     kubernetes {
       yaml """
 apiVersion: v1
@@ -87,28 +86,26 @@ spec:
       steps {
         container('docker') {
          sh "env"
-         sh '''echo eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT}'''
-         sh '''echo ${IMAGE_TAG}'''
-//         sh """docker build -t eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT} .""";
-//         sh "docker images";
+         sh '''docker build -t eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT} .''';
+         sh "docker images";
         }
       }
     }
-//    stage('Push container') {
-//      steps {
-//        container('docker') {
-//          sh "cat /tmp/gcr/jenkins-gcr.json | docker login -u _json_key --password-stdin https://eu.gcr.io";
-//          sh """docker push eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT}""";
-//          }
-//      }
-//    }
-//    stage('Deploy') {
-//      steps {
-//        container('kubectl') {
-//            sh '''sed -i -e "s/CONTAINERTAG/${GIT_COMMIT}/g" -e "s/PROJECTID/${PROJECT}/g" deployment_dev ''';
-//            sh "kubectl apply -f deployment_dev";
-//        }
-//      }
-//    }
+    stage('Push container') {
+      steps {
+        container('docker') {
+          sh "cat /tmp/gcr/jenkins-gcr.json | docker login -u _json_key --password-stdin https://eu.gcr.io";
+          sh '''docker push eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT}''';
+          }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        container('kubectl') {
+            sh '''sed -i -e "s/CONTAINERTAG/${GIT_COMMIT}/g" -e "s/PROJECTID/${PROJECT}/g" deployment_dev ''';
+            sh "kubectl apply -f deployment_dev";
+        }
+      }
+    }
   }
 }
