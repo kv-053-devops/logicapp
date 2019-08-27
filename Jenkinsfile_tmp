@@ -4,7 +4,7 @@ pipeline {
     APP_NAME = "logicapp"
   }
 
- agent {
+agent {
     kubernetes {
       yaml """
 apiVersion: v1
@@ -86,7 +86,7 @@ spec:
       steps {
         container('docker') {
          sh "env"
-         sh """docker build -t eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT} .""";
+         sh '''docker build -t eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT} .''';
          sh "docker images";
         }
       }
@@ -95,7 +95,7 @@ spec:
       steps {
         container('docker') {
           sh "cat /tmp/gcr/jenkins-gcr.json | docker login -u _json_key --password-stdin https://eu.gcr.io";
-          sh """docker push eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT}""";
+          sh '''docker push eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT}''';
           }
       }
     }
