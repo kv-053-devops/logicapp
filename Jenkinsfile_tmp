@@ -87,7 +87,7 @@ spec:
       steps {
         container('docker') {
          sh "env"
-         sh "echo eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT}"
+         sh "echo eu.gcr.io/$PROJECT/${APP_NAME}:${GIT_COMMIT}"
 //         sh """docker build -t eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT} .""";
 //         sh "docker images";
         }
