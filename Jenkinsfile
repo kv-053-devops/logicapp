@@ -1,13 +1,7 @@
 pipeline {
 
   environment {
-    PROJECT = "demo2-248908"
     APP_NAME = "logicapp"
-    STORAGE_CREDS = "${PROJECT}"
-    IMAGE_TAG = "eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT}"
-    JENKINS_CRED = "${PROJECT}"
-    APP_REPO="https://github.com/kv-053-devops/logicapp.git"
-    NAMESPACE="dev"
   }
 
  agent {
@@ -28,7 +22,6 @@ spec:
   - name: jenkins-gcr-sa-creds
     secret:
       secretName: jenkins-gcr-json
-
   containers:
   - name: git
     image: gcr.io/cloud-builders/git
@@ -51,18 +44,34 @@ spec:
     - name: jenkins-gcr-sa-creds
       mountPath: /tmp/gcr/
       readOnly: true
+    env:
+    - name: PROJECT
+      valueFrom:
+        configMapKeyRef:
+          name: jenkins-vars
+          key: gcloud-project
   - name: kubectl
     image: gcr.io/cloud-builders/kubectl
     command:
     - cat
     tty: true
+    volumeMounts:
+    - name: jenkins-gcr-sa-creds
+      mountPath: /tmp/gcr/
+      readOnly: true
+    env:
+    - name: PROJECT
+      valueFrom:
+        configMapKeyRef:
+          name: jenkins-vars
+          key: gcloud-project
 """
 }
   }
   stages {
     stage('Checkout') {
         steps {
-            git branch: 'master', url: "${APP_REPO}"
+            git branch: 'master', url: "${GIT_URL}";
         }
     }
     stage('Code test') {
@@ -73,37 +82,30 @@ spec:
           }
         }
     }
-
     stage('Build and push container') {
       steps {
         container('docker') {
-        //  sh "cd $WORKSPACE/repo/${APP_NAME}";
-         sh "docker build -t ${IMAGE_TAG} .";
+         sh "env"
+         sh "docker build -t eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT} .";
+         sh "docker images";
         }
-    } 
-} 
-        stage('Push container') {
+      }
+    }
+    stage('Push container') {
       steps {
         container('docker') {
           sh "cat /tmp/gcr/jenkins-gcr.json | docker login -u _json_key --password-stdin https://eu.gcr.io";
-          sh "docker push ${IMAGE_TAG}";
-			// script {
-      //       docker.withRegistry("https://eu.gcr.io", "gcr:${STORAGE_CREDS}") {
-      //       sh "docker push ${IMAGE_TAG}"
-			//      }
-      //   }
-    }}}
-        stage('Deploy') {
+          sh "docker push eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT}";
+          }
+      }
+    }
+    stage('Deploy') {
       steps {
         container('kubectl') {
-         sh """sed -i "s/CONTAINERTAG/${GIT_COMMIT}/g" deployment_dev """
-         sh """sed -i "s/PROJECTID/${PROJECT}/g" deployment_dev """
-         sh "kubectl apply -f deployment_dev"
-         //sh "kubectl get pods";
-         //sh "kubectl expose deployment hello-web --type=LoadBalancer --port 81 --target-port 8081";
+            sh '''sed -i -e "s/CONTAINERTAG/${GIT_COMMIT}/g" -e "s/PROJECTID/${PROJECT}/g" deployment_dev ''';
+            sh "kubectl apply -f deployment_dev";
         }
-    } 
-}
-
-}
+      }
+    }
+  }
 }
