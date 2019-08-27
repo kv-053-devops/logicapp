@@ -4,10 +4,7 @@ pipeline {
     PROJECT = "demo2-248908"
     APP_NAME = "logicapp"
     STORAGE_CREDS = "${PROJECT}"
-    FE_SVC_NAME = "${APP_NAME}-frontend"
-    CLUSTER = "demo2-gke-cluster"
-    CLUSTER_ZONE = "europe-west3-a"
-    IMAGE_TAG = "eu.gcr.io/${PROJECT}/${APP_NAME}:${BUILD_NUMBER}"
+    IMAGE_TAG = "eu.gcr.io/${PROJECT}/${APP_NAME}:${GIT_COMMIT}"
     JENKINS_CRED = "${PROJECT}"
     APP_REPO="https://github.com/kv-053-devops/logicapp.git"
     NAMESPACE="dev"
@@ -82,7 +79,6 @@ spec:
         container('docker') {
         //  sh "cd $WORKSPACE/repo/${APP_NAME}";
          sh "docker build -t ${IMAGE_TAG} .";
-         sh "docker images";
         }
     } 
 } 
@@ -103,7 +99,6 @@ spec:
          sh """sed -i "s/CONTAINERTAG/${GIT_COMMIT}/g" deployment_dev """
          sh """sed -i "s/PROJECTID/${PROJECT}/g" deployment_dev """
          sh "kubectl apply -f deployment_dev"
-         sh "";
          //sh "kubectl get pods";
          //sh "kubectl expose deployment hello-web --type=LoadBalancer --port 81 --target-port 8081";
         }
