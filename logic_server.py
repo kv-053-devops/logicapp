@@ -3,20 +3,19 @@ from flask_api import status
 import requests
 import json
 import yaml
-import sys
+#import sys
+import os
 #import argparse
+
+# Read OS environment variables
+app_run_address = os.environ.get('APP_ADDRESS', '0.0.0.0')
+app_run_port = os.environ.get('APP_PORT', '5002')
+app_query_url = os.environ.get('APP_QUERY_URL', 'http://127.0.0.1:5003/query/yml_data')
 
 app = Flask(__name__)
 
+# default request timeout
 req_timeout = 60
-if len(sys.argv) != 1 :
-    app_run_address = sys.argv[1]
-    app_run_port = sys.argv[2]
-    app_query_url = sys.argv[3]
-else:
-    app_run_address = '0.0.0.0'
-    app_run_port = '5002'
-    app_query_url = 'http://127.0.0.1:5003/query/yml_data'
 
 list_of_datas = []
 realtime_response_filter = ['symbol', 'price', 'price_open','day_high', 'day_low',  'market_cap', 'volume', 'name']
@@ -90,5 +89,6 @@ def post_json_data():
 
 
 if __name__ == "__main__":
+    print(app_run_port,app_run_address,app_query_url)
     app.run(host=app_run_address, port=app_run_port)
 

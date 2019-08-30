@@ -20,8 +20,14 @@ spec:
         image: eu.gcr.io/PROJECTID/logicapp:CONTAINERTAG
         ports:
         - containerPort: 5002
-        args: ['0.0.0.0', '5002','http://queryapp.dev.svc:5003/query/yml_data']
+        env:
+        - name: APP_QUERY_URL
+          valueFrom:
+            configMapKeyRef:
+              name: logicapp-env-vars
+              key: logicapp-app-query-url
       restartPolicy: Always
+
 ---
 apiVersion: v1
 kind: Service
