@@ -8,7 +8,7 @@ steps:
   - 'pip install -r ./requirements.txt && python unit_test.py -v'
 
 # This step builds the container image.
-- name: 'eu.gcr.io/cloud-builders/docker'
+- name: 'gcr.io/cloud-builders/docker'
   id: Build Docker Image
   args:
   - 'build'
@@ -17,7 +17,7 @@ steps:
   - '.'
 
 # This step pushes the image to Container Registry
-- name: 'eu.gcr.io/cloud-builders/docker'
+- name: 'gcr.io/cloud-builders/docker'
   id: Push Docker Image to c-registry
   args:
   - 'push'
