@@ -13,7 +13,7 @@ steps:
   args:
   - 'build'
   - '-t'
-  - 'ue.gcr.io/$PROJECT_ID/logicapp:$SHORT_SHA'
+  - 'eu.gcr.io/$PROJECT_ID/logicapp:$SHORT_SHA'
   - '.'
 
 # This step pushes the image to Container Registry
