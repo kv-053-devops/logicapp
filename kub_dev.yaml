@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logicapp
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logicapp
+  template:
+    metadata:
+      labels:
+        app: logicapp
+    spec:
+      hostname: logicapp
+      containers:
+      - name: logicapp
+        image: eu.gcr.io/$PROJECT_ID/logicapp:$SHORT_SHA
+        ports:
+        - containerPort: 5002
+        env:
+        - name: APP_QUERY_URL
+          valueFrom:
+            configMapKeyRef:
+              name: logicapp-env-vars
+              key: logicapp-app-query-url
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logicapp
+  labels:
+    app: logicapp
+  namespace: dev
+spec:
+  ports:
+  - port: 5002
+    protocol: TCP
+  selector:
+    app: logicapp
+---
