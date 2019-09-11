@@ -23,9 +23,9 @@ steps:
   - 'push'
   - 'eu.gcr.io/$PROJECT_ID/logicapp:$SHORT_SHA'
 
-- name: 'gcr.io/cloud-builders/docker'
+- name: 'bhgedigital/envsubst'
   id: Prepare dev enviroment file
-  args: ['envsubst','<','kub_dev.yaml','>','kub_dev_ready.yaml']
+  args: ['envsubst','<','kub_dev.yaml']
   env:
     - 'PROJECT_ID=$PROJECT_ID'
     - 'SHORT_SHA=$SHORT_SHA'
@@ -34,5 +34,5 @@ steps:
 artifacts:
   objects:
     location: 'gs://$PROJECT_ID-spinnaker-conf/logicapp/'
-    paths: ['kub_dev_ready.yaml']
+    paths: ['kub_dev.yaml']
 
