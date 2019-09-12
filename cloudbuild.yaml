@@ -23,7 +23,7 @@ steps:
   - 'push'
   - 'eu.gcr.io/$PROJECT_ID/logicapp:$SHORT_SHA'
 
-- name: 'supinf/envsubst'
+- name: 'comarada/envsubst'
   id: Prepare dev enviroment file
   args: ['kub_dev.yaml']
   env:
@@ -32,6 +32,6 @@ steps:
 
 - name: 'gcr.io/cloud-builders/gsutil'
   id: Push dev K8 manifest to GS bucket
-  args: ['cp','/work/kub_dev.yaml','gs://$PROJECT_ID-spinnaker-conf/logicapp/kub_dev.yaml']
+  args: ['cp','kub_dev.yaml','gs://$PROJECT_ID-spinnaker-conf/logicapp/kub_dev.yaml']
 
 
