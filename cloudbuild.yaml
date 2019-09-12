@@ -25,7 +25,7 @@ steps:
 
 - name: 'supinf/envsubst'
   id: Prepare dev enviroment file
-  args: ['kub_dev.yaml']
+  args: ['kub_dev.yaml','>','kub_dev_new.yaml']
   env:
     - 'PROJECT_ID=$PROJECT_ID'
     - 'SHORT_SHA=$SHORT_SHA'
@@ -34,5 +34,5 @@ steps:
 artifacts:
   objects:
     location: 'gs://$PROJECT_ID-spinnaker-conf/logicapp/'
-    paths: ['kub_dev.yaml']
+    paths: ['kub_dev_new.yaml']
 
