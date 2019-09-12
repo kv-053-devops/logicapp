@@ -33,5 +33,5 @@ steps:
 - name: 'gcr.io/cloud-builders/gsutil'
   id: Push dev K8 manifest to GS bucket
   args: ['cp','ready_kub_dev.yaml','gs://$PROJECT_ID-spinnaker-conf/logicapp/ready_kub_dev.yaml']
-
+images: ['gcr.io/$PROJECT_ID/sample-app:$SHORT_SHA']
 
