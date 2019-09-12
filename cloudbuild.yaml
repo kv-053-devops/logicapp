@@ -23,9 +23,9 @@ steps:
   - 'push'
   - 'eu.gcr.io/$PROJECT_ID/logicapp:$SHORT_SHA'
 
-- name: 'bhgedigital/envsubst'
+- name: 'supinf/envsubst'
   id: Prepare dev enviroment file
-  args: ['sh','envsubst','<','kub_dev.yaml']
+  args: ['kub_dev.yaml']
   env:
     - 'PROJECT_ID=$PROJECT_ID'
     - 'SHORT_SHA=$SHORT_SHA'
