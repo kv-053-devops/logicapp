@@ -4,3 +4,4 @@ The "Logic" microservice for Devops kv-053
 * Python3.6
 * Flask server is used
 * -------------------------
+
