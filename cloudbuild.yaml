@@ -25,14 +25,13 @@ steps:
 
 - name: 'supinf/envsubst'
   id: Prepare dev enviroment file
-  args: ['kub_dev.yaml','>','kub_dev_new.yaml']
+  args: ['kub_dev.yaml','>','kub_dev_ready.yaml']
   env:
     - 'PROJECT_ID=$PROJECT_ID'
     - 'SHORT_SHA=$SHORT_SHA'
 
-#file for bucket
-artifacts:
-  objects:
-    location: 'gs://$PROJECT_ID-spinnaker-conf/logicapp/'
-    paths: ['kub_dev_new.yaml']
+- name: 'gcr.io/cloud-builders/gsutil'
+  id: Push dev K8 manifest to GS bucket
+  args: ['cp','kub_dev_ready.yaml','gs://$PROJECT_ID-spinnaker-conf/logicapp/kub_dev.yaml']
+
 
