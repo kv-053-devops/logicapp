@@ -6,4 +6,3 @@ The "Logic" microservice for Devops kv-053
 * -------------------------
 
 
-
