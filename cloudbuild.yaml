@@ -1,13 +1,11 @@
 steps:
-# This step runs the unit tests on the app
 - name: 'python:3.6-alpine'
   id: Test
   entrypoint: /bin/sh
   args:
   - -c
-  - 'pip install -r ./requirements.txt && python unit_test.py -v'
+  - 'python unit_test.py -v'
 
-# This step builds the container image.
 - name: 'gcr.io/cloud-builders/docker'
   id: Build Docker Image
   args:
@@ -16,21 +14,15 @@ steps:
   - 'eu.gcr.io/$PROJECT_ID/logicapp:$SHORT_SHA'
   - '.'
 
-# This step pushes the image to Container Registry
-- name: 'gcr.io/cloud-builders/docker'
-  id: Push Docker Image to c-registry
-  args:
-  - 'push'
-  - 'eu.gcr.io/$PROJECT_ID/logicapp:$SHORT_SHA'
-
 - name: 'comarada/envsubst'
   id: Prepare dev enviroment file
   args: ['kub_dev.yaml']
   env:
     - 'PROJECT_ID=$PROJECT_ID'
     - 'SHORT_SHA=$SHORT_SHA'
+  
+ - name: 'gcr.io/cloud-builders/gsutil'
+  id: Push dev K8 manifest to GS bucket
+  args: ['cp','ready_kub_dev.yaml','gs://$PROJECT_ID-spinnaker-conf/confman/ready_kub_dev.yaml']
+ 
 images: ['eu.gcr.io/$PROJECT_ID/logicapp:$SHORT_SHA']
-artifacts:
-  objects:
-    location: 'gs://$PROJECT_ID-spinnaker-conf/logicapp/'
-    paths: ['ready_kub_dev.yaml']
