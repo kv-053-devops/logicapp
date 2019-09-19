@@ -3,7 +3,9 @@ steps:
   id: Test
   entrypoint: /bin/sh
   args:
-  - -c
+  - '-c'
+  - 'apk update'
+  - 'apk add libpq-dev'
   - 'python unit_test.py -v'
 
 - name: 'gcr.io/cloud-builders/docker'
