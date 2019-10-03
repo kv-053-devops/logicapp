@@ -1,0 +1,100 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logicapp-canary
+  namespace: prod
+  labels:
+    app: logicapp
+    version: canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logicapp
+      version: canary
+  template:
+    metadata:
+      labels:
+        app: logicapp
+        version: canary
+    spec:
+      hostname: logicapp
+      containers:
+      - name: logicapp
+        image: eu.gcr.io/$PROJECT_ID/logicapp:$SHORT_SHA
+        ports:
+        - containerPort: 5002
+        env:
+        - name: APP_QUERY_URL
+          valueFrom:
+            configMapKeyRef:
+              name: logicapp-env-vars
+              key: app_query_url
+        - name: APP_SETTINGS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: logicapp-env-vars
+              key: app_settings_url
+        - name: APP_SETTINGS_SAVE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: logicapp-env-vars
+              key: app_settings_save_url
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logicapp-canary
+  labels:
+    app: logicapp
+    version: canary
+  namespace: prod
+spec:
+  ports:
+  - port: 5002
+    targetPort: 5002
+  selector:
+    app: logicapp
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: logicapp
+  namespace: prod
+spec:
+  host: logicapp-main
+  subsets:
+  - name: main
+    labels:
+      version: main
+  - name: canary
+    labels:
+      version: canary
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: logicapp
+  namespace: prod
+spec:
+  hosts:
+  - "*"
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: logicapp-main.prod.svc.cluster.local
+        subset: canary
+        port:
+          number: 5002
+      weight: 10
+    - destination:
+        host: logicapp-main.prod.svc.cluster.local
+        subset: main
+        port:
+          number: 5002
+      weight: 90
