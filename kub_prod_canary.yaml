@@ -80,7 +80,7 @@ metadata:
   namespace: prod
 spec:
   hosts:
-  - "*"
+  - logicapp.prod.svc.cluster.local
   http:
   - match:
     - uri:
