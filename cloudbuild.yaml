@@ -18,13 +18,39 @@ steps:
 
 - name: 'comarada/envsubst'
   id: Prepare dev enviroment file
+  args: ['kube_prod_main.yaml']
+  env:
+    - 'PROJECT_ID=$PROJECT_ID'
+    - 'SHORT_SHA=$SHORT_SHA'
+  
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp','ready_kube_prod_main.yaml','gs://$PROJECT_ID-spinnaker-conf/logicapp/ready_kube_prod_main.yaml']
+  
+  - name: 'comarada/envsubst'
+  id: Prepare dev enviroment file
+  args: ['kube_prod_canary.yaml']
+  env:
+    - 'PROJECT_ID=$PROJECT_ID'
+    - 'SHORT_SHA=$SHORT_SHA'
+  
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp','ready_kube_prod_canary.yaml','gs://$PROJECT_ID-spinnaker-conf/logicapp/ready_kube_prod_canary.yaml']
+
+
+- name: 'comarada/envsubst'
+  id: Prepare dev enviroment file
   args: ['kub_dev.yaml']
   env:
     - 'PROJECT_ID=$PROJECT_ID'
     - 'SHORT_SHA=$SHORT_SHA'
   
 - name: 'gcr.io/cloud-builders/gsutil'
-  id: Push dev K8 manifest to GS bucket
   args: ['cp','ready_kub_dev.yaml','gs://$PROJECT_ID-spinnaker-conf/logicapp/ready_kub_dev.yaml']
+ 
+    
+artifacts:
+  objects:
+    location: 'gs://$PROJECT_ID-spinnaker-conf/logicapp/'
+    paths: ['spin_job.yaml']
  
 images: ['eu.gcr.io/$PROJECT_ID/logicapp:$SHORT_SHA']
