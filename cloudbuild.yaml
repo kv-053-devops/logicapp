@@ -26,7 +26,7 @@ steps:
 - name: 'gcr.io/cloud-builders/gsutil'
   args: ['cp','ready_kube_prod_main.yaml','gs://$PROJECT_ID-spinnaker-conf/logicapp/ready_kube_prod_main.yaml']
   
-  - name: 'comarada/envsubst'
+- name: 'comarada/envsubst'
   id: Prepare yaml for canary
   args: ['kube_prod_canary.yaml']
   env:
