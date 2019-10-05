@@ -30,17 +30,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: logicapp-env-vars
-              key: app_query_url
-        - name: APP_SETTINGS_URL
-          valueFrom:
-            configMapKeyRef:
-              name: logicapp-env-vars
-              key: app_settings_url
-        - name: APP_SETTINGS_SAVE_URL
-          valueFrom:
-            configMapKeyRef:
-              name: logicapp-env-vars
-              key: app_settings_save_url
+              key: logicapp-app-query-url
       restartPolicy: Always
 ---
 apiVersion: v1
