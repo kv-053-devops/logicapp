@@ -54,7 +54,7 @@ metadata:
   name: logicapp
   namespace: prod
 spec:
-  host: logicapp-main
+  host: logicapp
   subsets:
   - name: main
     labels:
@@ -77,13 +77,13 @@ spec:
         prefix: /
     route:
     - destination:
-        host: logicapp-main.prod.svc.cluster.local
+        host: logicapp.prod.svc.cluster.local
         subset: canary
         port:
           number: 5002
       weight: 10
     - destination:
-        host: logicapp-main.prod.svc.cluster.local
+        host: logicapp.prod.svc.cluster.local
         subset: main
         port:
           number: 5002
