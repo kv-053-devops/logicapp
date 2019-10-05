@@ -36,7 +36,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: logicapp-main
+  name: logicapp
   labels:
     app: logicapp
     version: main
@@ -74,7 +74,7 @@ spec:
         prefix: /
     route:
     - destination:
-        host: logicapp-main.prod.svc.cluster.local
+        host: logicapp.prod.svc.cluster.local
         subset: main
         port:
           number: 5002
