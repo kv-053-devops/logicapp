@@ -39,7 +39,6 @@ metadata:
   name: logicapp
   labels:
     app: logicapp
-    version: main
   namespace: prod
 spec:
   ports:
@@ -54,7 +53,7 @@ metadata:
   name: logicapp
   namespace: prod
 spec:
-  host: logicapp-main
+  host: logicapp
   subsets:
   - name: main
     labels:
