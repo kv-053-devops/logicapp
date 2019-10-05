@@ -36,10 +36,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: logicapp-canary
+  name: logicapp
   labels:
     app: logicapp
-    version: canary
   namespace: prod
 spec:
   ports:
